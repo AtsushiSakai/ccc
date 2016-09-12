@@ -1,5 +1,5 @@
 ccc
-*.tmp
+tmp.*
 
 # Object files
 *.o

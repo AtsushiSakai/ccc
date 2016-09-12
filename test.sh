@@ -4,7 +4,7 @@ echo "Tests start"
 function test(){
   expected="$1"
   result="$2"
-  echo "$result" | ./ccc > tmp.s
+  echo "$result" | ./ccc > tmp.s #アセンブラのコード cccはアセンブラのコードをはく
 
   #コンパイルチェック
   if [ ! $? ];then
@@ -14,7 +14,6 @@ function test(){
 
   gcc -o tmp.out driver.c tmp.s || exit
 }
-
 
 make -s ccc
 

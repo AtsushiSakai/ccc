@@ -12,8 +12,7 @@ int main(int argc, char **argv){
       ".global mymain\n"
       "mymain:\n\t"
       "mov $%d, %%eax\n\t"
-      "ret\n",val
-      );
+      "ret\n",val);
 
   return 0;
 }
