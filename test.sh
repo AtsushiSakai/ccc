@@ -29,5 +29,5 @@ make -s ccc
 test 0 0
 test 42 42 
 
-rm -f tmp.out tmp.s
+# rm -f tmp.out tmp.s
 echo "All tests passed"

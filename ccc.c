@@ -1,18 +1,67 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <stdarg.h>
 
-int main(int argc, char **argv){
-  int val;
-  if(scanf("%d",&val)==EOF){
-    perror("scanf");
-    exit(1);
+#define BUFLEN 256
+
+
+FILE *fp;//デバック用ファイル
+
+void error(char *fmt,...){
+  va_list args;
+  va_start(args,fmt);
+  /* vfprint(stderr,fmt,args); *///何故かエラー
+  fprintf(stderr,"\n");
+  va_end(args);
+  exit(1);
+}
+
+/**
+ * @brief 数値用のアセンブラを出力する関数
+ *
+ * @param n
+ *
+ */
+void compile_number(int n){
+  //一番初めの値はnに入っている
+  int c;
+  while ((c=getc(stdin))!=EOF){
+    //スペースの場合は無視
+    if(isspace(c))
+      break;
+    if(!isdigit(c))
+      error("Invalid character in number:'%c'",c);
+
+    fprintf(fp,"%d\n",c);
+    fprintf(fp,"%d\n",n);
+
+    n=n*10+(c-'0');//桁を上げて足していく
+
+    fprintf(fp,"%d\n",n);
   }
 
   printf("\t.text\n\t"
-      ".global mymain\n"
-      "mymain:\n\t"
-      "mov $%d, %%eax\n\t"
-      "ret\n",val);
+      ".global intfn\n"
+      "intfn:\n\t"
+      "mov $%d, %%rax\n\t"
+      "ret\n",n);
+}
 
+void Compile(void){
+  int c=getc(stdin);//標準入力からひとまとまりの複数文字を取得
+
+  if(isdigit(c)){
+    return compile_number(c-'0');//アスキーコードで数字を取得
+  }
+
+  /* error("Don't know how to handle '%c'",c); */
+}
+
+int main(int argc, char **argv){
+  fp = fopen( "debug.txt", "w" );
+  Compile();
+  fclose(fp);
   return 0;
 }
+
