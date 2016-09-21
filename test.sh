@@ -1,19 +1,31 @@
 #!/bin/bash
 echo "Tests start"
 
-function test(){
-  expected="$1"
-  result="$2"
-  echo "$result" | ./ccc > tmp.s #アセンブラのコード cccはアセンブラのコードをはく
+function compile(){
+  echo "$1" | ./ccc > tmp.s
 
   #コンパイルチェック
-  if [ ! $? ];then
-    echo "Failed to comile $result"
+  if [ $? -ne 0 ]; then
+    echo "Failed to comile $1"
     exit
   fi
 
   #tmp.outという実行ファイルを作る driver.cとtmp.cを使って
   gcc -o tmp.out driver.c tmp.s || exit
+
+  if [ $? -ne 0 ]; then
+    echo "GCC failed"
+    exit
+  fi
+
+}
+
+function test(){
+  expected="$1"
+  result="$2"
+  echo $result
+  compile "$expected"
+
   rlt="`./tmp.out`" #実行ファイルを実行して、標準出力を取得
 
   if [ "$rlt" != "$expected" ]; then
@@ -29,5 +41,7 @@ make -s ccc
 test 0 0
 test 42 42 
 
-# rm -f tmp.out tmp.s
+test abs '"abc"'
+
+rm -f tmp.out tmp.s
 echo "All tests passed"

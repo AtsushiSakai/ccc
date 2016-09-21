@@ -11,7 +11,7 @@ FILE *fp;//デバック用ファイル
 void error(char *fmt,...){
   va_list args;
   va_start(args,fmt);
-  /* vfprint(stderr,fmt,args); *///何故かエラー
+  vfprintf(stderr,fmt,args);//何故かエラー
   fprintf(stderr,"\n");
   va_end(args);
   exit(1);
@@ -48,14 +48,49 @@ void compile_number(int n){
       "ret\n",n);
 }
 
+void compile_string(int c){
+  char buf[BUFLEN];
+  int i=0;
+  buf[i++]=c;
+
+  for(;;){
+    int c=getc(stdin);
+    if (c==EOF){
+      /* error("Unterminated string"); */
+      break;
+    }
+    else if(c=='\n'){
+      continue;
+    }
+
+    buf[i++]=c;
+    if(i==BUFLEN-1) error("String too long");
+  }
+
+  buf[i]='\0';
+  printf("\t.data\n"
+      ".mydata:\n\t"
+      ".string \"%s\"\n\t"
+      ".text\n\t"
+      ".global stringfn\n"
+      "stringfn:\n\t"
+      "lea .mydata(%%rip), %%rax\n\t"
+      "ret\n",buf);
+
+}
+
 void Compile(void){
   int c=getc(stdin);//標準入力からひとまとまりの複数文字を取得
 
   if(isdigit(c)){
     return compile_number(c-'0');//アスキーコードで数字を取得
   }
+  else{
+    return compile_string(c);
+  }
 
-  /* error("Don't know how to handle '%c'",c); */
+
+  error("Don't know how to handle '%c'",c);
 }
 
 int main(int argc, char **argv){

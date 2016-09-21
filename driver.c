@@ -12,6 +12,7 @@ int main(int argc, char **argv){
     printf("%d\n",intfn());//この表示された値が、返り値
   }
   else if(stringfn){
+    printf("%s\n",stringfn());
   }
   else{
     printf("Should not happen");
